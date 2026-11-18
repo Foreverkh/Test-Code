@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Folio — Personal Reading Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-paper: #FAF7F2;
+      --bg-card: #FFFFFF;
+      --bg-subtle: #F2ECE1;
+      --text-primary: #2C241E;
+      --text-secondary: #6E6259;
+      --text-muted: #9A8E84;
+      --accent-terracotta: #C85A32;
+      --accent-terracotta-hover: #B04A24;
+      --accent-sage: #4A6B5D;
+      --accent-sage-light: #E6EFEA;
+      --accent-amber: #D98A2B;
+      --accent-amber-light: #FDF3E3;
+      --border-light: #E6DFD5;
+      --shadow-sm: 0 2px 8px rgba(44, 36, 30, 0.05);
+      --shadow-md: 0 8px 24px rgba(44, 36, 30, 0.08);
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-paper);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding-bottom: 4rem;
+    }
+
+    h1, h2, h3, .serif {
+      font-family: 'Lora', Georgia, serif;
+    }
+
+    /* Layout Container */
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Header */
+    header {
+      padding: 2.25rem 0 1.75rem;
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 2rem;
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent-terracotta);
+      color: white;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .brand p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-terracotta);
+      color: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-terracotta-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+      border-color: var(--border-light);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-subtle);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      padding: 0.4rem 0.65rem;
+      font-size: 0.825rem;
+    }
+
+    .btn-ghost:hover {
+      background-color: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    .btn-danger-ghost:hover {
+      background-color: #FDECEA;
+      color: #C0392B;
+    }
+
+    /* Stats Dashboard */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.25rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    .stat-value {
+      font-family: 'Lora', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+
+    /* Controls: Filter Tabs & Search */
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 0.4rem;
+      background: var(--bg-subtle);
+      padding: 0.3rem;
+      border-radius: var(--radius-sm);
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 0.45rem 0.95rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .search-box {
+      position: relative;
+      min-width: 260px;
+      flex: 1;
+      max-width: 340px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.6rem 0.9rem 0.6rem 2.35rem;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--accent-terracotta);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Book Grid */
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.35rem;
+    }
+
+    .book-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .book-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.22rem 0.65rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-reading {
+      background: #FBECE6;
+      color: var(--accent-terracotta);
+    }
+
+    .badge-finished {
+      background: var(--accent-sage-light);
+      color: var(--accent-sage);
+    }
+
+    .badge-want {
+      background: var(--accent-amber-light);
+      color: #A66516;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.15rem;
+    }
+
+    .book-title {
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+      line-height: 1.3;
+    }
+
+    .book-author {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    /* Rating Stars */
+    .rating-display {
+      color: var(--accent-amber);
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      margin-bottom: 0.85rem;
+    }
+
+    /* Progress Bar Section */
+    .progress-section {
+      margin: 0.75rem 0 1rem;
+      padding: 0.85rem;
+      background: var(--bg-paper);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.45rem;
+      font-weight: 500;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--border-light);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-terracotta);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .page-input-group {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .page-input-group input {
+      width: 58px;
+      padding: 0.25rem 0.4rem;
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      font-size: 0.82rem;
+      text-align: center;
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .quick-btns {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .btn-xs {
+      padding: 0.22rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 4px;
+      border: 1px solid var(--border-light);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .btn-xs:hover {
+      background: var(--bg-subtle);
+      border-color: var(--text-muted);
+    }
+
+    .card-footer {
+      margin-top: auto;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .status-select-inline {
+      border: 1px solid var(--border-light);
+      background: var(--bg-paper);
+      color: var(--text-secondary);
+      border-radius: 4px;
+      padding: 0.25rem 0.45rem;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* Empty State */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 1.5rem;
+      background: var(--bg-card);
+      border: 1px dashed var(--border-light);
+      border-radius: var(--radius-md);
+    }
+
+    .empty-state h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .empty-state p {
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+      font-size: 0.95rem;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 22, 18, 0.45);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 460px;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-light);
+      animation: modalIn 0.18s ease-out;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-header h2 {
+      font-size: 1.35rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.35rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: var(--text-primary);
+      background: var(--bg-paper);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-terracotta);
+      background: #fff;
+    }
+
+    .star-picker {
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    .star-btn {
+      background: var(--bg-paper);
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      padding: 0.35rem 0.65rem;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--text-muted);
+      transition: all 0.12s;
+    }
+
+    .star-btn.selected {
+      background: var(--accent-amber-light);
+      border-color: var(--accent-amber);
+      color: var(--accent-amber);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      .search-box {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1>Folio</h1>
+          <p>Your personal reading shelf &amp; progress log</p>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="openAddModalBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Add Book
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Summary Statistics -->
+    <section class="stats-grid" aria-label="Reading Statistics">
+      <div class="stat-card">
+        <div class="stat-label">Total Books</div>
+        <div class="stat-value" id="statTotal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Currently Reading</div>
+        <div class="stat-value" id="statReading">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Finished</div>
+        <div class="stat-value" id="statFinished">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pages Read</div>
+        <div class="stat-value" id="statPages">0</div>
+      </div>
+    </section>
+
+    <!-- Filters & Search -->
+    <section class="controls-bar">
+      <div class="filter-tabs" role="tablist">
+        <button class="tab-btn active" data-filter="all">All Books</button>
+        <button class="tab-btn" data-filter="reading">Currently Reading</button>
+        <button class="tab-btn" data-filter="want">Want to Read</button>
+        <button class="tab-btn" data-filter="finished">Finished</button>
+      </div>
+
+      <div class="search-box">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search by title or author..." aria-label="Search books">
+      </div>
+    </section>
+
+    <!-- Book List -->
+    <section class="book-grid" id="bookGrid" aria-live="polite"></section>
+  </main>
+
+  <!-- Add / Edit Book Modal -->
+  <div class="modal-backdrop" id="bookModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add a Book</h2>
+        <button class="btn btn-ghost" id="closeModalBtn" aria-label="Close modal">✕</button>
+      </div>
+      <form id="bookForm">
+        <input type="hidden" id="bookId">
+        <div class="form-group">
+          <label for="titleInput">Book Title *</label>
+          <input type="text" id="titleInput" required placeholder="e.g., Piranesi">
+        </div>
+        <div class="form-group">
+          <label for="authorInput">Author *</label>
+          <input type="text" id="authorInput" required placeholder="e.g., Susanna Clarke">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="statusInput">Reading Status</label>
+            <select id="statusInput">
+              <option value="want">Want to Read</option>
+              <option value="reading" selected>Currently Reading</option>
+              <option value="finished">Finished</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="totalPagesInput">Total Pages *</label>
+            <input type="number" id="totalPagesInput" min="1" required placeholder="272">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="currentPageInput">Current Page</label>
+            <input type="number" id="currentPageInput" min="0" value="0">
+          </div>
+          <div class="form-group">
+            <label>Rating (Optional)</label>
+            <div class="star-picker" id="starPicker">
+              <button type="button" class="star-btn" data-val="1">1★</button>
+              <button type="button" class="star-btn" data-val="2">2★</button>
+              <button type="button" class="star-btn" data-val="3">3★</button>
+              <button type="button" class="star-btn" data-val="4">4★</button>
+              <button type="button" class="star-btn" data-val="5">5★</button>
+            </div>
+            <input type="hidden" id="ratingInput" value="0">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveBookBtn">Save Book</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-backdrop" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="modal" style="max-width: 390px;">
+      <div class="modal-header">
+        <h2 id="deleteModalTitle">Remove Book?</h2>
+        <button class="btn btn-ghost" id="closeDeleteModalBtn" aria-label="Close">✕</button>
+      </div>
+      <p style="color: var(--text-secondary); font-size: 0.92rem;">
+        Are you sure you want to remove <strong id="deleteBookTitle" style="color: var(--text-primary);"></strong> from your shelf?
+      </p>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmDeleteBtn" style="background-color: #C0392B;">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'folio_reading_tracker_v1';
+
+    const DEFAULT_BOOKS = [
+      {
+        id: 'book-1',
+        title: 'The Left Hand of Darkness',
+        author: 'Ursula K. Le Guin',
+        status: 'reading',
+        currentPage: 184,
+        totalPages: 304,
+        rating: 0
+      },
+      {
+        id: 'book-2',
+        title: 'Piranesi',
+        author: 'Susanna Clarke',
+        status: 'finished',
+        currentPage: 272,
+        totalPages: 272,
+        rating: 5
+      },
+      {
+        id: 'book-3',
+        title: 'Tomorrow, and Tomorrow, and Tomorrow',
+        author: 'Gabrielle Zevin',
+        status: 'want',
+        currentPage: 0,
+        totalPages: 416,
+        rating: 0
+      }
+    ];
+
+    let books = [];
+    let currentFilter = 'all';
+    let searchQuery = '';
+    let pendingDeleteId = null;
+
+    // DOM Elements
+    const bookGrid = document.getElementById('bookGrid');
+    const searchInput = document.getElementById('searchInput');
+    const filterTabs = document.querySelectorAll('.tab-btn');
+
+    // Modals
+    const bookModal = document.getElementById('bookModal');
+    const bookForm = document.getElementById('bookForm');
+    const deleteModal = document.getElementById('deleteModal');
+
+    // Initialize App
+    function init() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          books = JSON.parse(saved);
+        } catch (e) {
+          books = [...DEFAULT_BOOKS];
+        }
+      } else {
+        books = [...DEFAULT_BOOKS];
+        saveBooks();
+      }
+      render();
+    }
+
+    function saveBooks() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
+    }
+
+    // Update Summary Metrics
+    function updateStats() {
+      const total = books.length;
+      const reading = books.filter(b => b.status === 'reading').length;
+      const finished = books.filter(b => b.status === 'finished').length;
+      const pagesRead = books.reduce((sum, b) => {
+        if (b.status === 'finished') return sum + (Number(b.totalPages) || 0);
+        if (b.status === 'reading') return sum + (Number(b.currentPage) || 0);
+        return sum;
+      }, 0);
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statReading').textContent = reading;
+      document.getElementById('statFinished').textContent = finished;
+      document.getElementById('statPages').textContent = pagesRead.toLocaleString();
+    }
+
+    // Render Book Cards
+    function render() {
+      updateStats();
+
+      const filtered = books.filter(book => {
+        const matchesFilter = currentFilter === 'all' || book.status === currentFilter;
+        const q = searchQuery.toLowerCase().trim();
+        const matchesSearch = !q ||
+          book.title.toLowerCase().includes(q) ||
+          book.author.toLowerCase().includes(q);
+        return matchesFilter && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        bookGrid.innerHTML = `
+          <div class="empty-state">
+            <h3>No books found</h3>
+            <p>${books.length === 0 ? 'Your shelf is empty. Add your first book to start tracking!' : 'Try adjusting your search or filter.'}</p>
+            ${books.length === 0 ? '<button class="btn btn-primary" onclick="openAddModal()">+ Add Your First Book</button>' : ''}
+          </div>
+        `;
+        return;
+      }
+
+      bookGrid.innerHTML = filtered.map(book => {
+        const totalPages = Math.max(1, Number(book.totalPages) || 1);
+        const currentPage = Math.min(totalPages, Math.max(0, Number(book.currentPage) || 0));
+        const pct = book.status === 'finished' ? 100 : Math.round((currentPage / totalPages) * 100);
+
+        const badgeMap = {
+          reading: { label: 'Currently Reading', cls: 'badge-reading' },
+          finished: { label: 'Finished', cls: 'badge-finished' },
+          want: { label: 'Want to Read', cls: 'badge-want' }
+        };
+        const badge = badgeMap[book.status] || badgeMap.want;
+
+        const starsHtml = book.rating > 0
+          ? `<div class="rating-display" aria-label="Rated ${book.rating} out of 5 stars">${'★'.repeat(book.rating)}${'☆'.repeat(5 - book.rating)}</div>`
+          : '';
+
+        const progressHtml = book.status === 'reading' ? `
+          <div class="progress-section">
+            <div class="progress-header">
+              <span>${pct}% complete</span>
+              <span>${currentPage} / ${totalPages} pages</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" style="width: ${pct}%"></div>
+            </div>
+            <div class="progress-controls">
+              <div class="page-input-group">
+                <span>Page</span>
+                <input type="number" min="0" max="${totalPages}" value="${currentPage}"
+                  onchange="setBookPage('${book.id}', this.value)" aria-label="Current page for ${escapeHtml(book.title)}">
+              </div>
+              <div class="quick-btns">
+                <button type="button" class="btn-xs" onclick="incrementPage('${book.id}', 1)">+1</button>
+                <button type="button" class="btn-xs" onclick="incrementPage('${book.id}', 10)">+10</button>
+              </div>
+            </div>
+          </div>
+        ` : '';
+
+        return `
+          <article class="book-card">
+            <div>
+              <div class="card-top">
+                <span class="badge ${badge.cls}">${badge.label}</span>
+                <div class="card-actions">
+                  <button class="btn btn-ghost" onclick="openEditModal('${book.id}')" title="Edit book" aria-label="Edit ${escapeHtml(book.title)}">Edit</button>
+                  <button class="btn btn-ghost btn-danger-ghost" onclick="promptDelete('${book.id}')" title="Delete book" aria-label="Delete ${escapeHtml(book.title)}">✕</button>
+                </div>
+              </div>
+              <h3 class="book-title serif">${escapeHtml(book.title)}</h3>
+              <p class="book-author">by ${escapeHtml(book.author)}</p>
+              ${starsHtml}
+              ${progressHtml}
+            </div>
+
+            <div class="card-footer">
+              <span>${totalPages} pages</span>
+              <select class="status-select-inline" aria-label="Change status for ${escapeHtml(book.title)}" onchange="changeStatus('${book.id}', this.value)">
+                <option value="want" ${book.status === 'want' ? 'selected' : ''}>Want to Read</option>
+                <option value="reading" ${book.status === 'reading' ? 'selected' : ''}>Currently Reading</option>
+                <option value="finished" ${book.status === 'finished' ? 'selected' : ''}>Finished</option>
+              </select>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // Progress & Status Helpers
+    window.setBookPage = function(id, val) {
+      const book = books.find(b => b.id === id);
+      if (!book) return;
+      const total = Number(book.totalPages) || 1;
+      let page = Math.max(0, Math.min(total, parseInt(val, 10) || 0));
+      book.currentPage = page;
+      if (page >= total) {
+        book.status = 'finished';
+      }
+      saveBooks();
+      render();
+    };
+
+    window.incrementPage = function(id, delta) {
+      const book = books.find(b => b.id === id);
+      if (!book) return;
+      setBookPage(id, (Number(book.currentPage) || 0) + delta);
+    };
+
+    window.changeStatus = function(id, newStatus) {
+      const book = books.find(b => b.id === id);
+      if (!book) return;
+      book.status = newStatus;
+      if (newStatus === 'finished') {
+        book.currentPage = book.totalPages;
+      } else if (newStatus === 'want') {
+        book.currentPage = 0;
+      }
+      saveBooks();
+      render();
+    };
+
+    // Modal Operations
+    window.openAddModal = function() {
+      document.getElementById('modalTitle').textContent = 'Add a Book';
+      document.getElementById('bookId').value = '';
+      bookForm.reset();
+      document.getElementById('statusInput').value = 'reading';
+      document.getElementById('currentPageInput').value = 0;
+      setSelectedRating(0);
+      bookModal.classList.add('open');
+      document.getElementById('titleInput').focus();
+    };
+
+    window.openEditModal = function(id) {
+      const book = books.find(b => b.id === id);
+      if (!book) return;
+      document.getElementById('modalTitle').textContent = 'Edit Book';
+      document.getElementById('bookId').value = book.id;
+      document.getElementById('titleInput').value = book.title;
+      document.getElementById('authorInput').value = book.author;
+      document.getElementById('statusInput').value = book.status;
+      document.getElementById('totalPagesInput').value = book.totalPages;
+      document.getElementById('currentPageInput').value = book.currentPage;
+      setSelectedRating(book.rating || 0);
+      bookModal.classList.add('open');
+    };
+
+    function closeBookModal() {
+      bookModal.classList.remove('open');
+    }
+
+    // Star Rating Picker
+    const starBtns = document.querySelectorAll('.star-btn');
+    function setSelectedRating(val) {
+      document.getElementById('ratingInput').value = val;
+      starBtns.forEach(btn => {
+        const btnVal = Number(btn.dataset.val);
+        btn.classList.toggle('selected', btnVal <= val && val > 0);
+      });
+    }
+
+    starBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const clicked = Number(btn.dataset.val);
+        const current = Number(document.getElementById('ratingInput').value);
+        setSelectedRating(clicked === current ? 0 : clicked);
+      });
+    });
+
+    // Save Book Form
+    bookForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('bookId').value;
+      const title = document.getElementById('titleInput').value.trim();
+      const author = document.getElementById('authorInput').value.trim();
+      const status = document.getElementById('statusInput').value;
+      const totalPages = Math.max(1, parseInt(document.getElementById('totalPagesInput').value, 10) || 1);
+      let currentPage = Math.max(0, parseInt(document.getElementById('currentPageInput').value, 10) || 0);
+      const rating = parseInt(document.getElementById('ratingInput').value, 10) || 0;
+
+      if (status === 'finished') currentPage = totalPages;
+      if (status === 'want') currentPage = 0;
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      if (id) {
+        const idx = books.findIndex(b => b.id === id);
+        if (idx !== -1) {
+          books[idx] = { ...books[idx], title, author, status, totalPages, currentPage, rating };
+        }
+      } else {
+        books.unshift({
+          id: 'book-' + Date.now(),
+          title,
+          author,
+          status,
+          totalPages,
+          currentPage,
+          rating
+        });
+      }
+
+      saveBooks();
+      closeBookModal();
+      render();
+    });
+
+    // Delete Modal Flow
+    window.promptDelete = function(id) {
+      const book = books.find(b => b.id === id);
+      if (!book) return;
+      pendingDeleteId = id;
+      document.getElementById('deleteBookTitle').textContent = book.title;
+      deleteModal.classList.add('open');
+    };
+
+    function closeDeleteModal() {
+      pendingDeleteId = null;
+      deleteModal.classList.remove('open');
+    }
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+      if (pendingDeleteId) {
+        books = books.filter(b => b.id !== pendingDeleteId);
+        saveBooks();
+        render();
+      }
+      closeDeleteModal();
+    });
+
+    // Event Listeners
+    document.getElementById('openAddModalBtn').addEventListener('click', openAddModal);
+    document.getElementById('closeModalBtn').addEventListener('click', closeBookModal);
+    document.getElementById('cancelModalBtn').addEventListener('click', closeBookModal);
+    document.getElementById('closeDeleteModalBtn').addEventListener('click', closeDeleteModal);
+    document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
+
+    bookModal.addEventListener('click', (e) => {
+      if (e.target === bookModal) closeBookModal();
+    });
+    deleteModal.addEventListener('click', (e) => {
+      if (e.target === deleteModal) closeDeleteModal();
+    });
+
+    filterTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        filterTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentFilter = tab.dataset.filter;
+        render();
+      });
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      render();
+    });
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    init();
+  </script>
+</body>
+</html>
